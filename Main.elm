@@ -24,7 +24,6 @@ initialState =
     , action = None
     }
 
-
 update : RealWorld -> Input -> State -> State
 update { mouse } input state =
     case input of
@@ -49,34 +48,30 @@ selectAction { x , y } state =
 
 handleAction : Location -> Action -> Penguin -> Penguin
 handleAction { x, y } action penguin =
-    case action of
-      LeftArm -> 
-          let (cx, cy) = (130, 40)
-              x' = x + cx
-              y' = y - cy
-              theta' = if x' == 0 then 0 else atan (y'/x')
-          in { penguin | leftArmAngle <- getAngle x' y' theta' }
-      RightArm ->
-          let (cx, cy) = (130, 40)
-              x' = x - cx
-              y' = y - cy
-              theta' = if x' == 0 then 190 else atan (y'/x')
-          in { penguin | rightArmAngle <- getAngle x' y' theta' }
+    let cx = if | action == LeftArm -> -130
+                | otherwise -> 130
+        cy = 40
+        x' = x - cx
+        y' = y - cy
+        theta' = if x' == 0 then 0 else atan (y'/x')
+    in case action of
+      LeftArm -> { penguin | leftArmAngle <- getAngle x' y' theta' }
+      RightArm -> { penguin | rightArmAngle <- getAngle x' y' theta' }
 
 getAngle : Float -> Float -> Float -> Float
 getAngle x y theta =
     let theta' = Debug.watch "Theta" (theta * (180/pi))
         _ = Debug.watch "X" x
         _ = Debug.watch "Y" y
-    in
-    if | x > 0 && y > 0 -> theta' + 90
-       | x < 0 && y > 0 -> theta' - 90
-       | x < 0 && y < 0 -> theta' - 90
-       | x > 0 && y < 0 -> theta' + 90
+    in if | x > 0 && y > 0 -> theta' + 90
+          | x < 0 && y > 0 -> theta' - 90
+          | x < 0 && y < 0 -> theta' - 90
+          | x > 0 && y < 0 -> theta' + 90
 
 render : RealWorld -> State -> [Form]
 render rw state = [draw state.penguin]
 
+main : Signal Element
 main = play { update = update
             , render = render
             , initialState = initialState
