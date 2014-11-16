@@ -60,13 +60,12 @@ handleAction { x, y } action penguin =
 
 getAngle : Float -> Float -> Float -> Float
 getAngle x y theta =
-    let theta' = Debug.watch "Theta" (theta * (180/pi))
-        _ = Debug.watch "X" x
-        _ = Debug.watch "Y" y
+    let theta' = theta * (180/pi)
     in if | x > 0 && y > 0 -> theta' + 90
           | x < 0 && y > 0 -> theta' - 90
           | x < 0 && y < 0 -> theta' - 90
           | x > 0 && y < 0 -> theta' + 90
+          | otherwise -> theta' + 90
 
 render : RealWorld -> State -> [Form]
 render rw state = [draw state.penguin]
